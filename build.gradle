@@ -1,0 +1,39 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'scala'
+apply plugin: 'maven'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.6
+version = '0.1'
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'test-yarn', 'Implementation-Version': 0.1
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.apache.hadoop:hadoop-common:2.2.0'
+    compile 'org.scala-lang:scala-library:2.10.2'
+    compile 'org.apache.hadoop:hadoop-yarn-client:2.2.0'
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+
+task copyDependantLibs(type: Copy) {
+    from ('src/main/resource/')
+    from configurations.runtime
+    include "scala*"
+    include "log4j*"
+    into "$buildDir/dependant-libs"
+    
+}
+
+build.dependsOn('copyDependantLibs')
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.0'
+}
